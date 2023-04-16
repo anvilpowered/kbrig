@@ -1,4 +1,4 @@
-# KBrig - Modern Brigadier for Kotlin Multiplatform
+# KBrig - Modern Brigadier for Multiplatform Plugins
 
 *Portions of this project have been inspired by https://github.com/Mojang/brigadier copyrighted by Microsoft Corporation under the terms of the MIT license.*
 
@@ -80,7 +80,7 @@ proxyServer.commandManager.register(BrigadierCommand(commandNode))
 ```
 
 Java:
-```kt
+```java
 class BridgeSource implements MyCommandSource {
     private final CommandSource velocityCommandSource;
 
