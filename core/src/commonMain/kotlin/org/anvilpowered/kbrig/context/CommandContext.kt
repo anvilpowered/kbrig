@@ -20,13 +20,13 @@ data class CommandContext<S>(
 
 typealias ArgumentFetcher<T> = (String, KClass<T>) -> T?
 
-fun <S, V : Any> CommandContext<S>.getArgument(name: String, clazz: KClass<V>): V {
+operator fun <T : Any> CommandContext<*>.get(name: String, clazz: KClass<T>): T {
     val argument = argumentFetcher(name, clazz)
         ?: throw IllegalArgumentException("No such argument '$name' exists on this command")
     return clazz.cast(argument)
 }
 
-inline operator fun <S, reified V : Any> CommandContext<S>.get(name: String) = getArgument(name, V::class)
+inline operator fun <reified T : Any> CommandContext<*>.get(name: String) = get(name, T::class)
 
 val <S> CommandContext<S>.lastChild: CommandContext<S>
     get() = generateSequence(this) { it.child }.last()
