@@ -19,7 +19,7 @@ class CommandSyntaxException(message: String) : Exception(message) {
 
         private fun getContext(input: String, cursor: Int): String {
             require(cursor >= 0)
-            val builder = StringBuilder()
+            val builder = StringBuilder(" at position $cursor: ")
             val adjustedCursor = min(input.length, cursor)
             if (adjustedCursor > CONTEXT_AMOUNT) {
                 builder.append("...")
