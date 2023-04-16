@@ -1,5 +1,3 @@
-
-
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.ktlint)
@@ -11,7 +9,6 @@ val projectVersion = file("version").readLines().first()
 allprojects {
     apply(plugin = "org.jetbrains.kotlin.multiplatform")
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
-    apply(plugin = "kbrig-publish")
     group = "org.anvilpowered"
     version = projectVersion
     project.findProperty("buildNumber")
@@ -26,8 +23,4 @@ allprojects {
             }
         }
     }
-}
-
-dependencies {
-    commonMainImplementation(kotlin("reflect"))
 }
