@@ -10,7 +10,7 @@ package org.anvilpowered.kbrig.builder
 
 import org.anvilpowered.kbrig.context.CommandContext
 
-fun <S, T : ArgumentBuilder<S, T>> T.executesSingleSuccess(block: (CommandContext<S>) -> Unit) =
+fun <S, B : ArgumentBuilder<S, B>> B.executesSingleSuccess(block: (CommandContext<S>) -> Unit) =
     executes { context ->
         try {
             block(context)
