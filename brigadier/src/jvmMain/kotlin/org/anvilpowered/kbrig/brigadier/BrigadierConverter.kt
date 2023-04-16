@@ -111,4 +111,4 @@ private fun Suggestions.toBrigadier(): BrigadierSuggestions = BrigadierSuggestio
 private fun Suggestion.toBrigadier(): BrigadierSuggestion = BrigadierSuggestion(range.toBrigadier(), text)
 private fun StringRange.toBrigadier(): BrigadierStringRange = BrigadierStringRange(start, end)
 private fun BrigadierSuggestionsBuilder.toKBrig(): SuggestionsBuilder = SuggestionsBuilder(input, start)
-private fun BrigadierStringReader.toKBrig(): StringReader = StringReader(string, cursor)
+private fun BrigadierStringReader.toKBrig(): StringReader = BridgeStringReader(this)
