@@ -39,33 +39,32 @@ import com.mojang.brigadier.tree.RootCommandNode as BrigadierRootCommandNode
 
 fun <S> LiteralCommandNode<S>.toBrigadier(): BrigadierLiteralCommandNode<S> {
     val original = this
-    return object : BrigadierLiteralCommandNode<S>(name, command.toBrigadier(), requirement, redirect?.toBrigadier(), null, forks) {
+    return object : BrigadierLiteralCommandNode<S>(name, command?.toBrigadier(), requirement, redirect?.toBrigadier(), null, forks) {
+
         override fun listSuggestions(
             context: BrigadierCommandContext<S>,
             builder: BrigadierSuggestionsBuilder,
         ): CompletableFuture<BrigadierSuggestions> = coroutineToFuture {
             original.listSuggestions(context.toKBrig(), builder.toKBrig()).toBrigadier()
         }
-    }
+    }.withChildrenFrom(this)
 }
 
 fun <S, T> ArgumentCommandNode<S, T>.toBrigadier(): BrigadierArgumentCommandNode<S, T> {
     return BrigadierArgumentCommandNode(
         name,
         type.toBrigadier(),
-        command.toBrigadier(),
+        command?.toBrigadier(),
         requirement,
         redirect?.toBrigadier(),
         null,
         forks,
         null,
-    )
+    ).withChildrenFrom(this)
 }
 
 fun <S> RootCommandNode<S>.toBrigadier(): BrigadierRootCommandNode<S> {
-    return BrigadierRootCommandNode<S>().also {
-        children.forEach { (_, child) -> it.addChild(child.toBrigadier()) }
-    }
+    return BrigadierRootCommandNode<S>().withChildrenFrom(this)
 }
 
 fun <S> CommandNode<S>.toBrigadier(): BrigadierCommandNode<S> = when (this) {
@@ -73,6 +72,11 @@ fun <S> CommandNode<S>.toBrigadier(): BrigadierCommandNode<S> = when (this) {
     is ArgumentCommandNode<S, *> -> toBrigadier()
     is RootCommandNode<S> -> toBrigadier()
     else -> throw IllegalArgumentException("Unknown node type: $this")
+}
+
+private fun <S, N : BrigadierCommandNode<S>> N.withChildrenFrom(original: CommandNode<S>): N {
+    original.children.forEach { (_, child) -> addChild(child.toBrigadier()) }
+    return this
 }
 
 private fun <S> Command<S>.toBrigadier(): BrigadierCommand<S> =

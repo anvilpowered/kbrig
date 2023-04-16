@@ -18,12 +18,13 @@ import org.anvilpowered.kbrig.suggestion.SuggestionsBuilder
 class ArgumentCommandNode<S, T>(
     name: String,
     val type: ArgumentType<T>,
-    override val command: Command<S>,
+    command: Command<S>?,
     requirement: (S) -> Boolean,
     redirect: CommandNode<S>? = null,
     forks: Boolean = false,
+    children: Map<String, CommandNode<S>>,
     private val customSuggestions: SuggestionProvider<S>? = null,
-) : CommandNode<S>(name, command, requirement, redirect, forks) {
+) : CommandNode<S>(name, command, requirement, redirect, forks, children) {
 
     override val usageText: String
         get() = USAGE_ARGUMENT_OPEN + name + USAGE_ARGUMENT_CLOSE

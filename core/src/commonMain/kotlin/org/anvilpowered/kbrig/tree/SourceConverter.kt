@@ -16,19 +16,34 @@ import org.anvilpowered.kbrig.context.CommandContext
  * Converts the given [ArgumentCommandNode] with source type [S] to an [ArgumentCommandNode] with source type [R].
  */
 fun <S, R, T> ArgumentCommandNode<S, T>.mapSource(mapper: (R) -> S): ArgumentCommandNode<R, T> =
-    ArgumentCommandNode(name, type, command.mapSource(mapper), requirement.mapSource(mapper), redirect?.mapSource(mapper), forks)
+    ArgumentCommandNode(
+        name,
+        type,
+        command?.mapSource(mapper),
+        requirement.mapSource(mapper),
+        redirect?.mapSource(mapper),
+        forks,
+        children.mapValues { (_, child) -> child.mapSource(mapper) },
+    )
 
 /**
  * Converts the given [LiteralCommandNode] with source type [S] to an [LiteralCommandNode] with source type [R].
  */
 fun <S, R> LiteralCommandNode<S>.mapSource(mapper: (R) -> S): LiteralCommandNode<R> =
-    LiteralCommandNode(name, command.mapSource(mapper), requirement.mapSource(mapper), redirect?.mapSource(mapper), forks)
+    LiteralCommandNode(
+        name,
+        command?.mapSource(mapper),
+        requirement.mapSource(mapper),
+        redirect?.mapSource(mapper),
+        forks,
+        children.mapValues { (_, child) -> child.mapSource(mapper) },
+    )
 
 /**
  * Converts the given [RootCommandNode] with source type [S] to an [RootCommandNode] with source type [R].
  */
 fun <S, R> RootCommandNode<S>.mapSource(mapper: (R) -> S): RootCommandNode<R> =
-    RootCommandNode<R>().also { children.forEach { (_, child) -> it.addChild(child.mapSource(mapper)) } }
+    RootCommandNode(children.mapValues { (_, child) -> child.mapSource(mapper) })
 
 /**
  * Converts the given [CommandNode] with source type [S] to an [CommandNode] with source type [R].

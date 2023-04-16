@@ -25,19 +25,6 @@ class RequiredArgumentBuilder<S, T>(
     override val self: RequiredArgumentBuilder<S, T>
         get() = this
 
-    override fun build(): ArgumentCommandNode<S, T> {
-        val result = ArgumentCommandNode(
-            name,
-            type,
-            checkNotNull(command) { "Command may not be null" },
-            requirement,
-            redirect,
-            forks,
-            suggestionsProvider,
-        )
-        for (argument in root.children.values) {
-            result.addChild(argument)
-        }
-        return result
-    }
+    override fun build(): ArgumentCommandNode<S, T> =
+        ArgumentCommandNode(name, type, command, requirement, redirect, forks, children, suggestionsProvider)
 }

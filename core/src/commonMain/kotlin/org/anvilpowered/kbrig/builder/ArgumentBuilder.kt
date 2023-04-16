@@ -9,10 +9,13 @@ package org.anvilpowered.kbrig.builder
 
 import org.anvilpowered.kbrig.Command
 import org.anvilpowered.kbrig.tree.CommandNode
-import org.anvilpowered.kbrig.tree.RootCommandNode
 
 sealed class ArgumentBuilder<S, T : ArgumentBuilder<S, T>> {
-    val root = RootCommandNode<S>()
+
+    private val _children = mutableMapOf<String, CommandNode<S>>()
+    val children: Map<String, CommandNode<S>>
+        get() = _children
+
     var command: Command<S>? = null
         private set
     var requirement: (S) -> Boolean = { true }
@@ -21,23 +24,16 @@ sealed class ArgumentBuilder<S, T : ArgumentBuilder<S, T>> {
         private set
     var forks = false
         private set
-    protected abstract val self: T
 
-    fun then(argument: ArgumentBuilder<S, *>): T {
-        check(redirect == null) { "Cannot add children to a redirected node" }
-        root.addChild(argument.build())
-        return self
-    }
+    protected abstract val self: T
 
     fun then(argument: CommandNode<S>): T {
         check(redirect == null) { "Cannot add children to a redirected node" }
-        root.addChild(argument)
+        _children[argument.name] = argument
         return self
     }
 
-    fun getArguments(): Collection<CommandNode<S>> {
-        return root.children.values
-    }
+    fun then(argument: ArgumentBuilder<S, *>): T = then(argument.build())
 
     fun executes(command: Command<S>?): T {
         this.command = command
@@ -50,7 +46,7 @@ sealed class ArgumentBuilder<S, T : ArgumentBuilder<S, T>> {
     }
 
     fun forward(target: CommandNode<S>?, forks: Boolean): T {
-        check(root.children.isEmpty()) { "Cannot forward a node with children" }
+        check(children.isEmpty()) { "Cannot forward a node with children" }
         redirect = target
         this.forks = forks
         return self

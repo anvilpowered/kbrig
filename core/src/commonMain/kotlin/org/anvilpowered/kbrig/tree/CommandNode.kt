@@ -16,14 +16,12 @@ import org.anvilpowered.kbrig.suggestion.SuggestionsBuilder
 
 abstract class CommandNode<S>(
     val name: String,
-    open val command: Command<S>?,
+    val command: Command<S>?,
     val requirement: (S) -> Boolean,
     val redirect: CommandNode<S>?,
     val forks: Boolean,
+    val children: Map<String, CommandNode<S>>,
 ) : Comparable<CommandNode<S>> {
-
-    private val _children = mutableMapOf<String, CommandNode<S>>()
-    val children: Map<String, CommandNode<S>> get() = _children
 
     private val arguments = mutableMapOf<String, ArgumentCommandNode<S, *>>()
     private var hasLiterals = false
@@ -33,40 +31,6 @@ abstract class CommandNode<S>(
 
     abstract suspend fun listSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): Suggestions
     abstract fun toBuilder(): ArgumentBuilder<S, *>
-
-    fun addChild(node: CommandNode<S>) {
-        if (node is RootCommandNode<*>) {
-            throw UnsupportedOperationException("Cannot add a RootCommandNode as a child to any other CommandNode")
-        }
-        val child = children[node.name]
-        if (child != null) {
-            // The original Brigadier code replaces the old command with the one from the new node.
-            // This is the only place that mutates the command, so in the interests of immutability
-            // we're going to skip this step.
-
-            // We've found something to merge onto
-            // if (node.command != null) {
-            //    child.command = node.command
-            // }
-            for (grandchild in node.children.values) {
-                child.addChild(grandchild)
-            }
-        } else {
-            _children[node.name] = node
-            if (node is LiteralCommandNode<*>) {
-                hasLiterals = true
-            } else if (node is ArgumentCommandNode<*, *>) {
-                arguments[node.name] = node as ArgumentCommandNode<S, *>
-            }
-        }
-    }
-
-    fun removeChildByName(name: String) {
-        val child = _children.remove(name)
-        if (child != null) {
-            arguments.remove(name)
-        }
-    }
 
     fun getRelevantNodes(input: StringReader): Collection<CommandNode<S>> {
         return if (hasLiterals) {

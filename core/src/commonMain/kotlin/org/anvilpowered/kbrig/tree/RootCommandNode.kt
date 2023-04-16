@@ -12,12 +12,13 @@ import org.anvilpowered.kbrig.context.CommandContext
 import org.anvilpowered.kbrig.suggestion.Suggestions
 import org.anvilpowered.kbrig.suggestion.SuggestionsBuilder
 
-class RootCommandNode<S> : CommandNode<S>(
+class RootCommandNode<S>(children: Map<String, CommandNode<S>>) : CommandNode<S>(
     name = "",
     command = null,
     requirement = { true },
     redirect = null,
     forks = false,
+    children,
 ) {
 
     override val usageText: String = ""

@@ -15,11 +15,12 @@ import org.anvilpowered.kbrig.suggestion.SuggestionsBuilder
 
 class LiteralCommandNode<S>(
     literal: String,
-    override var command: Command<S>,
+    command: Command<S>?,
     requirement: (S) -> Boolean,
     redirect: CommandNode<S>?,
     forks: Boolean,
-) : CommandNode<S>(literal, command, requirement, redirect, forks) {
+    children: Map<String, CommandNode<S>> = emptyMap(),
+) : CommandNode<S>(literal, command, requirement, redirect, forks, children) {
 
     override val usageText: String = name
     private val literalLowerCase: String = name.lowercase()
