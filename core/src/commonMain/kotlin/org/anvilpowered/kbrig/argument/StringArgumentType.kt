@@ -9,7 +9,7 @@ package org.anvilpowered.kbrig.argument
 
 import org.anvilpowered.kbrig.StringReader
 import org.anvilpowered.kbrig.context.CommandContext
-import org.anvilpowered.kbrig.context.getArgument
+import org.anvilpowered.kbrig.context.get
 import org.anvilpowered.kbrig.exception.CommandSyntaxException
 
 sealed class StringArgumentType private constructor(
@@ -45,6 +45,6 @@ sealed class StringArgumentType private constructor(
         fun greedyPhrase() = GreedyPhrase
 
         @JvmStatic
-        override fun get(context: CommandContext<*>, name: String): String = context.getArgument(name)
+        override fun get(context: CommandContext<*>, name: String): String = context[name]
     }
 }

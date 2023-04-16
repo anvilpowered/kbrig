@@ -26,7 +26,7 @@ fun <S, V : Any> CommandContext<S>.getArgument(name: String, clazz: KClass<V>): 
     return clazz.cast(argument)
 }
 
-inline fun <S, reified V : Any> CommandContext<S>.getArgument(name: String) = getArgument(name, V::class)
+inline operator fun <S, reified V : Any> CommandContext<S>.get(name: String) = getArgument(name, V::class)
 
 val <S> CommandContext<S>.lastChild: CommandContext<S>
     get() = generateSequence(this) { it.child }.last()

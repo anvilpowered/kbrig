@@ -9,7 +9,7 @@ package org.anvilpowered.kbrig.argument
 
 import org.anvilpowered.kbrig.StringReader
 import org.anvilpowered.kbrig.context.CommandContext
-import org.anvilpowered.kbrig.context.getArgument
+import org.anvilpowered.kbrig.context.get
 import org.anvilpowered.kbrig.exception.CommandSyntaxException
 import org.anvilpowered.kbrig.suggestion.Suggestions
 import org.anvilpowered.kbrig.suggestion.SuggestionsBuilder
@@ -34,5 +34,5 @@ object BooleanArgumentType : ArgumentType<Boolean>, ArgumentType.Companion<Boole
 
     override val examples = mutableSetOf("true", "false")
 
-    override fun get(context: CommandContext<*>, name: String): Boolean = context.getArgument(name)
+    override fun get(context: CommandContext<*>, name: String): Boolean = context[name]
 }

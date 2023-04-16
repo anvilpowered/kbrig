@@ -9,7 +9,7 @@ package org.anvilpowered.kbrig.argument
 
 import org.anvilpowered.kbrig.StringReader
 import org.anvilpowered.kbrig.context.CommandContext
-import org.anvilpowered.kbrig.context.getArgument
+import org.anvilpowered.kbrig.context.get
 import org.anvilpowered.kbrig.exception.BuiltInExceptions
 import org.anvilpowered.kbrig.exception.CommandSyntaxException
 
@@ -41,6 +41,6 @@ data class FloatArgumentType @JvmOverloads constructor(
         )
 
         @JvmStatic
-        override fun get(context: CommandContext<*>, name: String): Float = context.getArgument(name)
+        override fun get(context: CommandContext<*>, name: String): Float = context[name]
     }
 }
