@@ -44,8 +44,7 @@ class StringReader(
             number.toInt()
         } catch (ex: NumberFormatException) {
             cursor = start
-            throw BuiltInExceptions.readerInvalidInt
-                .createWithContext(this, number)
+            throw BuiltInExceptions.readerInvalidInt.createWithContext(this, number)
         }
     }
 
@@ -63,8 +62,7 @@ class StringReader(
             number.toLong()
         } catch (ex: NumberFormatException) {
             cursor = start
-            throw BuiltInExceptions.readerInvalidLong
-                .createWithContext(this, number)
+            throw BuiltInExceptions.readerInvalidLong.createWithContext(this, number)
         }
     }
 
@@ -82,8 +80,7 @@ class StringReader(
             number.toDouble()
         } catch (ex: NumberFormatException) {
             cursor = start
-            throw BuiltInExceptions.readerInvalidDouble
-                .createWithContext(this, number)
+            throw BuiltInExceptions.readerInvalidDouble.createWithContext(this, number)
         }
     }
 
@@ -101,8 +98,7 @@ class StringReader(
             number.toFloat()
         } catch (ex: NumberFormatException) {
             cursor = start
-            throw BuiltInExceptions.readerInvalidFloat
-                .createWithContext(this, number)
+            throw BuiltInExceptions.readerInvalidFloat.createWithContext(this, number)
         }
     }
 
@@ -121,8 +117,7 @@ class StringReader(
         }
         val next = peek()
         if (!isQuotedStringStart(next)) {
-            throw BuiltInExceptions.readerExpectedStartOfQuote
-                .createWithContext(this)
+            throw BuiltInExceptions.readerExpectedStartOfQuote.createWithContext(this)
         }
         skip()
         return readStringUntil(next)
@@ -140,8 +135,7 @@ class StringReader(
                     escaped = false
                 } else {
                     cursor--
-                    throw BuiltInExceptions.readerInvalidEscape
-                        .createWithContext(this, c.toString())
+                    throw BuiltInExceptions.readerInvalidEscape.createWithContext(this, c.toString())
                 }
             } else if (c == SYNTAX_ESCAPE) {
                 escaped = true
@@ -172,8 +166,7 @@ class StringReader(
         val start = cursor
         val value = readString()
         if (value.isEmpty()) {
-            throw BuiltInExceptions.readerExpectedBool
-                .createWithContext(this)
+            throw BuiltInExceptions.readerExpectedBool.createWithContext(this)
         }
         return if (value == "true") {
             true
@@ -181,16 +174,14 @@ class StringReader(
             false
         } else {
             cursor = start
-            throw BuiltInExceptions.readerInvalidBool
-                .createWithContext(this, value)
+            throw BuiltInExceptions.readerInvalidBool.createWithContext(this, value)
         }
     }
 
     @Throws(CommandSyntaxException::class)
     fun expect(c: Char) {
         if (!canRead() || peek() != c) {
-            throw BuiltInExceptions.readerExpectedSymbol
-                .createWithContext(this, c.toString())
+            throw BuiltInExceptions.readerExpectedSymbol.createWithContext(this, c.toString())
         }
         skip()
     }
