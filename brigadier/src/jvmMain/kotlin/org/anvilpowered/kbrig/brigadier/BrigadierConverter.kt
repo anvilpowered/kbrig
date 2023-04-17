@@ -106,21 +106,8 @@ private fun <S> BrigadierCommandContext<S>.toKBrig(): CommandContext<S> =
 private fun <T> ArgumentType<T>.toBrigadier(): BrigadierArgumentType<T> {
     val original = this
 
-    // convert standard types to their brigadier equivalents
-    @Suppress("UNCHECKED_CAST")
-    when (this) {
-        is BooleanArgumentType -> return BrigadierBooleanArgumentType.bool() as BrigadierArgumentType<T>
-        is DoubleArgumentType -> return BrigadierDoubleArgumentType.doubleArg(minimum, maximum) as BrigadierArgumentType<T>
-        is FloatArgumentType -> return BrigadierFloatArgumentType.floatArg(minimum, maximum) as BrigadierArgumentType<T>
-        is IntegerArgumentType -> return BrigadierIntegerArgumentType.integer(minimum, maximum) as BrigadierArgumentType<T>
-        is LongArgumentType -> return BrigadierLongArgumentType.longArg(minimum, maximum) as BrigadierArgumentType<T>
-        is StringArgumentType -> return when (this) {
-            StringArgumentType.GreedyPhrase -> BrigadierStringArgumentType.greedyString() as BrigadierArgumentType<T>
-            StringArgumentType.SingleWord -> BrigadierStringArgumentType.word() as BrigadierArgumentType<T>
-            StringArgumentType.QuotablePhrase -> BrigadierStringArgumentType.string() as BrigadierArgumentType<T>
-        }
-        else -> {}
-    }
+    // first convert standard types to their brigadier equivalents
+    original.toDefaultBrigadierArgument()?.let { return it }
 
     return object : BrigadierArgumentType<T> {
         override fun parse(reader: BrigadierStringReader): T = original.parse(reader.toKBrig())
@@ -133,6 +120,23 @@ private fun <T> ArgumentType<T>.toBrigadier(): BrigadierArgumentType<T> {
         }
 
         override fun getExamples(): Collection<String> = original.examples
+    }
+}
+
+private fun <T> ArgumentType<T>.toDefaultBrigadierArgument(): BrigadierArgumentType<T>? {
+    @Suppress("UNCHECKED_CAST")
+    return when (this) {
+        is BooleanArgumentType -> BrigadierBooleanArgumentType.bool() as BrigadierArgumentType<T>
+        is DoubleArgumentType -> BrigadierDoubleArgumentType.doubleArg(minimum, maximum) as BrigadierArgumentType<T>
+        is FloatArgumentType -> BrigadierFloatArgumentType.floatArg(minimum, maximum) as BrigadierArgumentType<T>
+        is IntegerArgumentType -> BrigadierIntegerArgumentType.integer(minimum, maximum) as BrigadierArgumentType<T>
+        is LongArgumentType -> BrigadierLongArgumentType.longArg(minimum, maximum) as BrigadierArgumentType<T>
+        is StringArgumentType -> when (this) {
+            StringArgumentType.GreedyPhrase -> BrigadierStringArgumentType.greedyString() as BrigadierArgumentType<T>
+            StringArgumentType.SingleWord -> BrigadierStringArgumentType.word() as BrigadierArgumentType<T>
+            StringArgumentType.QuotablePhrase -> BrigadierStringArgumentType.string() as BrigadierArgumentType<T>
+        }
+        else -> null
     }
 }
 
