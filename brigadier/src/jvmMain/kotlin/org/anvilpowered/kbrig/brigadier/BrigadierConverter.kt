@@ -13,6 +13,12 @@ package org.anvilpowered.kbrig.brigadier
 import org.anvilpowered.kbrig.Command
 import org.anvilpowered.kbrig.StringReader
 import org.anvilpowered.kbrig.argument.ArgumentType
+import org.anvilpowered.kbrig.argument.BooleanArgumentType
+import org.anvilpowered.kbrig.argument.DoubleArgumentType
+import org.anvilpowered.kbrig.argument.FloatArgumentType
+import org.anvilpowered.kbrig.argument.IntegerArgumentType
+import org.anvilpowered.kbrig.argument.LongArgumentType
+import org.anvilpowered.kbrig.argument.StringArgumentType
 import org.anvilpowered.kbrig.context.CommandContext
 import org.anvilpowered.kbrig.context.StringRange
 import org.anvilpowered.kbrig.coroutine.coroutineToFuture
@@ -27,6 +33,12 @@ import java.util.concurrent.CompletableFuture
 import com.mojang.brigadier.Command as BrigadierCommand
 import com.mojang.brigadier.StringReader as BrigadierStringReader
 import com.mojang.brigadier.arguments.ArgumentType as BrigadierArgumentType
+import com.mojang.brigadier.arguments.BoolArgumentType as BrigadierBooleanArgumentType
+import com.mojang.brigadier.arguments.DoubleArgumentType as BrigadierDoubleArgumentType
+import com.mojang.brigadier.arguments.FloatArgumentType as BrigadierFloatArgumentType
+import com.mojang.brigadier.arguments.IntegerArgumentType as BrigadierIntegerArgumentType
+import com.mojang.brigadier.arguments.LongArgumentType as BrigadierLongArgumentType
+import com.mojang.brigadier.arguments.StringArgumentType as BrigadierStringArgumentType
 import com.mojang.brigadier.context.CommandContext as BrigadierCommandContext
 import com.mojang.brigadier.context.StringRange as BrigadierStringRange
 import com.mojang.brigadier.suggestion.Suggestion as BrigadierSuggestion
@@ -93,6 +105,10 @@ private fun <S> BrigadierCommandContext<S>.toKBrig(): CommandContext<S> =
 
 private fun <T> ArgumentType<T>.toBrigadier(): BrigadierArgumentType<T> {
     val original = this
+
+    // first convert standard types to their brigadier equivalents
+    original.toDefaultBrigadierArgument()?.let { return it }
+
     return object : BrigadierArgumentType<T> {
         override fun parse(reader: BrigadierStringReader): T = original.parse(reader.toKBrig())
 
@@ -104,6 +120,23 @@ private fun <T> ArgumentType<T>.toBrigadier(): BrigadierArgumentType<T> {
         }
 
         override fun getExamples(): Collection<String> = original.examples
+    }
+}
+
+private fun <T> ArgumentType<T>.toDefaultBrigadierArgument(): BrigadierArgumentType<T>? {
+    @Suppress("UNCHECKED_CAST")
+    return when (this) {
+        is BooleanArgumentType -> BrigadierBooleanArgumentType.bool() as BrigadierArgumentType<T>
+        is DoubleArgumentType -> BrigadierDoubleArgumentType.doubleArg(minimum, maximum) as BrigadierArgumentType<T>
+        is FloatArgumentType -> BrigadierFloatArgumentType.floatArg(minimum, maximum) as BrigadierArgumentType<T>
+        is IntegerArgumentType -> BrigadierIntegerArgumentType.integer(minimum, maximum) as BrigadierArgumentType<T>
+        is LongArgumentType -> BrigadierLongArgumentType.longArg(minimum, maximum) as BrigadierArgumentType<T>
+        is StringArgumentType -> when (this) {
+            StringArgumentType.GreedyPhrase -> BrigadierStringArgumentType.greedyString() as BrigadierArgumentType<T>
+            StringArgumentType.SingleWord -> BrigadierStringArgumentType.word() as BrigadierArgumentType<T>
+            StringArgumentType.QuotablePhrase -> BrigadierStringArgumentType.string() as BrigadierArgumentType<T>
+        }
+        else -> null
     }
 }
 

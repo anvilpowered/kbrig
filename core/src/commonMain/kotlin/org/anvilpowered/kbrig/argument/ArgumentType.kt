@@ -23,6 +23,7 @@ sealed interface ArgumentType<T> {
         builder: SuggestionsBuilder,
     ): Suggestions = Suggestions.empty()
 
+    // TODO: Custom examples for default argument types are not correctly converted to Brigadier's format
     val examples: Set<String>
         get() = emptySet()
 
