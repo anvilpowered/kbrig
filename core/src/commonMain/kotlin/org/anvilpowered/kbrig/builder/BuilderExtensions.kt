@@ -8,13 +8,14 @@
 
 package org.anvilpowered.kbrig.builder
 
+import org.anvilpowered.kbrig.Command
 import org.anvilpowered.kbrig.context.CommandContext
 
-fun <S, B : ArgumentBuilder<S, B>> B.executesSingleSuccess(block: (CommandContext<S>) -> Unit) =
+fun <S, B : ArgumentBuilder<S, B>> B.executesSingleSuccess(block: (context: CommandContext<S>) -> Unit) =
     executes { context ->
         try {
             block(context)
-            1
+            Command.SINGLE_SUCCESS
         } catch (e: Exception) {
             e.printStackTrace()
             0
