@@ -8,6 +8,7 @@
 package org.anvilpowered.kbrig.builder
 
 import org.anvilpowered.kbrig.Command
+import org.anvilpowered.kbrig.argument.ArgumentType
 import org.anvilpowered.kbrig.tree.CommandNode
 
 sealed class ArgumentBuilder<S, B : ArgumentBuilder<S, B>> {
@@ -56,4 +57,13 @@ sealed class ArgumentBuilder<S, B : ArgumentBuilder<S, B>> {
     fun fork(target: CommandNode<S>): B = forward(target, true)
 
     abstract fun build(): CommandNode<S>
+
+    companion object {
+
+        @JvmStatic
+        fun <S> literal(literal: String) = LiteralArgumentBuilder<S>(literal)
+
+        @JvmStatic
+        fun <S, T> argument(name: String, type: ArgumentType<T>) = RequiredArgumentBuilder<S, T>(name, type)
+    }
 }

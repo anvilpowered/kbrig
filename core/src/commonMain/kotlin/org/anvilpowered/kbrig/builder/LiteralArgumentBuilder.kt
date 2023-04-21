@@ -9,7 +9,10 @@ package org.anvilpowered.kbrig.builder
 
 import org.anvilpowered.kbrig.tree.LiteralCommandNode
 
-class LiteralArgumentBuilder<S>(private val literal: String) : ArgumentBuilder<S, LiteralArgumentBuilder<S>>() {
+class LiteralArgumentBuilder<S> internal constructor(
+    private val literal: String,
+) : ArgumentBuilder<S, LiteralArgumentBuilder<S>>() {
+
     override val self: LiteralArgumentBuilder<S>
         get() = this
 

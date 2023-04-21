@@ -11,7 +11,7 @@ import org.anvilpowered.kbrig.argument.ArgumentType
 import org.anvilpowered.kbrig.suggestion.SuggestionProvider
 import org.anvilpowered.kbrig.tree.ArgumentCommandNode
 
-class RequiredArgumentBuilder<S, T>(
+class RequiredArgumentBuilder<S, T> internal constructor(
     val name: String,
     private val type: ArgumentType<T>,
 ) : ArgumentBuilder<S, RequiredArgumentBuilder<S, T>>() {
