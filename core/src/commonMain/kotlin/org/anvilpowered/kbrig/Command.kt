@@ -9,7 +9,7 @@ package org.anvilpowered.kbrig
 
 import org.anvilpowered.kbrig.context.CommandContext
 
-fun interface Command<S> {
+fun interface Command<in S> {
     fun execute(context: CommandContext<S>): Int
 
     companion object {

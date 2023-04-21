@@ -10,7 +10,7 @@ package org.anvilpowered.kbrig.context
 import kotlin.reflect.KClass
 import kotlin.reflect.cast
 
-data class CommandContext<S>(
+data class CommandContext<out S>(
     val source: S,
     val input: String,
     val argumentFetcher: ArgumentFetcher<*>,
