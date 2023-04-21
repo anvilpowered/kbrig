@@ -9,6 +9,6 @@ package org.anvilpowered.kbrig.suggestion
 
 import org.anvilpowered.kbrig.context.CommandContext
 
-fun interface SuggestionProvider<S> {
+fun interface SuggestionProvider<in S> {
     suspend fun getSuggestions(context: CommandContext<S>, builder: SuggestionsBuilder): Suggestions
 }
