@@ -64,6 +64,6 @@ sealed class ArgumentBuilder<S, B : ArgumentBuilder<S, B>> {
         fun <S> literal(literal: String) = LiteralArgumentBuilder<S>(literal)
 
         @JvmStatic
-        fun <S, T> argument(name: String, type: ArgumentType<T>) = RequiredArgumentBuilder<S, T>(name, type)
+        fun <S, T> required(name: String, type: ArgumentType<T>) = RequiredArgumentBuilder<S, T>(name, type)
     }
 }
