@@ -21,3 +21,5 @@ fun <S, B : ArgumentBuilder<S, B>> B.executesSingleSuccess(block: (context: Comm
             0
         }
     }
+
+fun <S, B : ArgumentBuilder<S, B>> B.executesSuspending(command: Command.Suspending<S>) = executes(command)
