@@ -8,6 +8,7 @@
 package org.anvilpowered.kbrig.context
 
 import org.anvilpowered.kbrig.ImmutableStringReader
+import kotlin.jvm.JvmStatic
 import kotlin.math.max
 import kotlin.math.min
 

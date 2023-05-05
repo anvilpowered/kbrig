@@ -5,14 +5,12 @@
  *     Use of this source code is governed by an MIT-style license that can be found
  *     in the LICENSE file or at https://opensource.org/licenses/MIT.
  */
+
 package org.anvilpowered.kbrig
 
 import org.anvilpowered.kbrig.context.CommandContext
 
-fun interface Command<in S> {
-    fun execute(context: CommandContext<S>): Int
-
-    companion object {
-        const val SINGLE_SUCCESS = 1
-    }
+@Suppress("FUN_INTERFACE_WITH_SUSPEND_FUNCTION")
+fun interface SuspendingCommand<in S> {
+    suspend fun executeSuspending(context: CommandContext<S>): Int
 }

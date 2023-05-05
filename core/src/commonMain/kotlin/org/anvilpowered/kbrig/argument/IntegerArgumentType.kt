@@ -12,6 +12,8 @@ import org.anvilpowered.kbrig.context.CommandContext
 import org.anvilpowered.kbrig.context.get
 import org.anvilpowered.kbrig.exception.BuiltInExceptions
 import org.anvilpowered.kbrig.exception.CommandSyntaxException
+import kotlin.jvm.JvmOverloads
+import kotlin.jvm.JvmStatic
 
 class IntegerArgumentType @JvmOverloads constructor(
     override val minimum: Int,

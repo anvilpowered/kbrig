@@ -11,6 +11,7 @@ import org.anvilpowered.kbrig.StringReader
 import org.anvilpowered.kbrig.context.CommandContext
 import org.anvilpowered.kbrig.context.get
 import org.anvilpowered.kbrig.exception.CommandSyntaxException
+import kotlin.jvm.JvmStatic
 
 sealed class StringArgumentType private constructor(
     override val examples: Set<String> = emptySet(),

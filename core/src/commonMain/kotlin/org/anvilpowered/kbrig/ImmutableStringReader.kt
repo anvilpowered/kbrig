@@ -35,7 +35,7 @@ interface ImmutableStringReader {
     /**
      * The substring from the start of the string to the current cursor position.
      */
-    val read: String
+    val previous: String
         get() = string.substring(0, cursor)
 
     /**

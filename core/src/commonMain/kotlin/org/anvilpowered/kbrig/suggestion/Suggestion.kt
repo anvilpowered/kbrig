@@ -8,7 +8,7 @@
 package org.anvilpowered.kbrig.suggestion
 
 import org.anvilpowered.kbrig.context.StringRange
-import java.util.Objects
+import kotlin.jvm.JvmOverloads
 
 open class Suggestion @JvmOverloads constructor(
     val range: StringRange,
@@ -56,7 +56,13 @@ open class Suggestion @JvmOverloads constructor(
         return range == other.range && text == other.text && tooltip == other.tooltip
     }
 
-    override fun hashCode(): Int = Objects.hash(range, text, tooltip)
+    override fun hashCode(): Int {
+        var result = range.hashCode()
+        result = 31 * result + text.hashCode()
+        result = 31 * result + (tooltip?.hashCode() ?: 0)
+        return result
+    }
+
     override fun toString(): String = "Suggestion{range=$range, text='$text', tooltip='$tooltip'}"
     override fun compareTo(other: Suggestion): Int = text.compareTo(other.text)
     open fun compareToIgnoreCase(other: Suggestion): Int = text.compareTo(other.text, ignoreCase = true)

@@ -8,7 +8,7 @@
 package org.anvilpowered.kbrig.suggestion
 
 import org.anvilpowered.kbrig.context.StringRange
-import java.util.Objects
+import kotlin.jvm.JvmOverloads
 
 class IntegerSuggestion @JvmOverloads constructor(
     range: StringRange,
@@ -26,7 +26,7 @@ class IntegerSuggestion @JvmOverloads constructor(
         return value == other.value && super.equals(other)
     }
 
-    override fun hashCode(): Int = Objects.hash(super.hashCode(), value)
+    override fun hashCode(): Int = 31 * super.hashCode() + value
 
     override fun toString(): String = "IntegerSuggestion{value=$value, range=$range, text='$text', tooltip='$tooltip'}"
 

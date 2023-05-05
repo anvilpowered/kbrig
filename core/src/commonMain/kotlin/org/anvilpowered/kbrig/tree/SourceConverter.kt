@@ -11,6 +11,7 @@ package org.anvilpowered.kbrig.tree
 
 import org.anvilpowered.kbrig.Command
 import org.anvilpowered.kbrig.context.CommandContext
+import kotlin.jvm.JvmName
 
 /**
  * Converts the given [ArgumentCommandNode] with source type [S] to an [ArgumentCommandNode] with source type [R].

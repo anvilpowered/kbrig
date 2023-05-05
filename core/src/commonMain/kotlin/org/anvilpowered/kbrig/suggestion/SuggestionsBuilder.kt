@@ -8,6 +8,7 @@
 package org.anvilpowered.kbrig.suggestion
 
 import org.anvilpowered.kbrig.context.StringRange
+import kotlin.jvm.JvmOverloads
 
 class SuggestionsBuilder(
     val input: String,

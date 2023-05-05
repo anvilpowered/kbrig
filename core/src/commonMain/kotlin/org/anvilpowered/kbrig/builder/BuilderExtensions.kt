@@ -9,7 +9,9 @@
 package org.anvilpowered.kbrig.builder
 
 import org.anvilpowered.kbrig.Command
+import org.anvilpowered.kbrig.SuspendingCommand
 import org.anvilpowered.kbrig.context.CommandContext
+import org.anvilpowered.kbrig.toBlocking
 
 fun <S, B : ArgumentBuilder<S, B>> B.executesSingleSuccess(block: (context: CommandContext<S>) -> Unit) =
     executes { context ->
@@ -22,4 +24,4 @@ fun <S, B : ArgumentBuilder<S, B>> B.executesSingleSuccess(block: (context: Comm
         }
     }
 
-fun <S, B : ArgumentBuilder<S, B>> B.executesSuspending(command: Command.Suspending<S>) = executes(command)
+fun <S, B : ArgumentBuilder<S, B>> B.executesSuspending(command: SuspendingCommand<S>?) = executes(command?.toBlocking())
