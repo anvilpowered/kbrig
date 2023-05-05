@@ -52,10 +52,10 @@ class LiteralCommandNode<S>(
 
     override val examples: Set<String> = setOf(name)
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o !is LiteralCommandNode<*>) return false
-        return if (name != o.name) false else super.equals(o)
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is LiteralCommandNode<*>) return false
+        return if (name != other.name) false else super.equals(other)
     }
 
     override fun hashCode(): Int {
