@@ -35,7 +35,7 @@ interface MyCommandSource {
 }
 
 fun createPingCommand(): LiteralCommandNode<MyCommandSource> {
-    return LiteralArgumentBuilder<MyCommandSource>("ping")
+    return ArgumentBuilder.literal<MyCommandSource>("ping")
         .executesSingleSuccess { it.source.sendMessage(Component.text("Pong!")) }
         .build()
 }
@@ -48,7 +48,7 @@ interface MyCommandSource {
 }
 
 public static LiteralCommandNode<MyCommandSource> createPingCommand() {
-    return new LiteralArgumentBuilder<MyCommandSource>("ping")
+    return ArgumentBuilder.literal<MyCommandSource>("ping")
         .executes(context -> {
             context.getSource().sendMessage("Pong!");
             return Command.SINGLE_SUCCESS;
