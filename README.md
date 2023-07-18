@@ -4,7 +4,7 @@
 
 ## What is this?
 
-KBrig is a modern rewrite (in Kotlin) of Brigadier's *frontend* for building and registering commands.
+KBrig is a modern Kotlin rewrite of Brigadier's command building API with a focus on multiplatform support.
 It does not replace Brigadier's dispatching logic, so it is still necessary to register and execute commands via the standard Brigadier `CommandDispatcher`.
 
 ## Who is this library for?

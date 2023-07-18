@@ -19,6 +19,7 @@ extensions.configure<PublishingExtension> {
     publications.withType<MavenPublication> {
         pom {
             name.set("kbrig")
+            description.set("A modern Kotlin rewrite of Brigadier's command building API with a focus on multiplatform support")
             url.set("https://www.anvilpowered.org")
             scm {
                 url.set("https://github.com/anvilpowered/kbrig")
