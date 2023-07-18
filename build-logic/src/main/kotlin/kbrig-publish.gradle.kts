@@ -2,6 +2,12 @@ import java.net.URI
 
 plugins {
     `maven-publish`
+    id("org.jetbrains.dokka")
+}
+
+val javadocJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("javadoc")
+    from(tasks.dokkaHtml)
 }
 
 extensions.configure<PublishingExtension> {
@@ -17,6 +23,7 @@ extensions.configure<PublishingExtension> {
         }
     }
     publications.withType<MavenPublication> {
+        artifact(javadocJar)
         pom {
             name.set("kbrig")
             description.set("A modern Kotlin rewrite of Brigadier's command building API with a focus on multiplatform support")
