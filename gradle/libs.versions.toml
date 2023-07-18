@@ -7,4 +7,4 @@ kotlinx-coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2"
 
 [plugins]
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
-ktlint = "org.jlleitschuh.gradle.ktlint:11.3.2"
+ktlint = "org.jlleitschuh.gradle.ktlint:11.5.0"
