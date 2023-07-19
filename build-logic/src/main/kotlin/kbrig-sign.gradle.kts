@@ -5,6 +5,9 @@ plugins {
 }
 
 extensions.configure<PublishingExtension> {
+    if (project.hasProperty("nosign")) {
+        return@configure
+    }
     extensions.configure<SigningExtension> {
         tasks.withType<BuildKotlinToolingMetadataTask> {
             sign(outputFile)
