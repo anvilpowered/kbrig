@@ -1,13 +1,17 @@
+import org.jetbrains.kotlin.gradle.tooling.BuildKotlinToolingMetadataTask
+
 plugins {
     signing
 }
 
 extensions.configure<PublishingExtension> {
-    publications.withType<MavenPublication> {
-        val publication = this
-        extensions.configure<SigningExtension> {
-            val signingTasks = sign(publication)
-            tasks.withType<AbstractPublishToMaven>().configureEach {
+    extensions.configure<SigningExtension> {
+        tasks.withType<BuildKotlinToolingMetadataTask> {
+            sign(outputFile)
+        }
+        publications.withType<MavenPublication> {
+            val signingTasks = sign(this)
+            tasks.withType<AbstractPublishToMaven> {
                 dependsOn(signingTasks)
             }
         }
