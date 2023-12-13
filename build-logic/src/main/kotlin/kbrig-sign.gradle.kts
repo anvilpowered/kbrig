@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tooling.BuildKotlinToolingMetadataTask
-
 plugins {
     signing
 }
@@ -14,9 +12,6 @@ extensions.configure<PublishingExtension> {
             /* defaultSecretKey = */ System.getenv("SIGNING_KEY"),
             /* defaultPassword = */ System.getenv("SIGNING_PASSWORD"),
         )
-        tasks.withType<BuildKotlinToolingMetadataTask> {
-            sign(outputFile)
-        }
         publications.withType<MavenPublication> {
             val signingTasks = sign(this)
             tasks.withType<AbstractPublishToMaven> {
