@@ -1,6 +1,7 @@
 import jetbrains.buildServer.configs.kotlin.BuildFeatures
 import jetbrains.buildServer.configs.kotlin.BuildType
 import jetbrains.buildServer.configs.kotlin.DslContext
+import jetbrains.buildServer.configs.kotlin.FailureAction
 import jetbrains.buildServer.configs.kotlin.buildFeatures.PullRequests
 import jetbrains.buildServer.configs.kotlin.buildFeatures.commitStatusPublisher
 import jetbrains.buildServer.configs.kotlin.buildFeatures.perfmon
@@ -37,9 +38,13 @@ version = "2023.11"
 
 project {
 
-    buildType(Test())
-    buildType(Style())
-    buildType(Publish())
+    val test = Test()
+    val style = Style()
+    val publish = Publish(test, style)
+
+    buildType(test)
+    buildType(style)
+    buildType(publish)
 
     features {
         githubIssues {
@@ -47,7 +52,7 @@ project {
             displayName = "anvilpowered/kbrig"
             repositoryURL = "https://github.com/anvilpowered/kbrig"
             authType = accessToken {
-                accessToken = "credentialsJSON:cd9fa95f-cb19-4a1c-87ad-e02c6ad4ade3"
+                accessToken = "credentialsJSON:f57a4fdd-fb30-41c0-9983-620364336d03"
             }
             param("tokenId", "")
         }
@@ -63,12 +68,7 @@ fun BuildType.configureVcs() {
 fun BuildType.configureTriggers() {
     triggers {
         vcs {
-            branchFilter = """
-                +:master
-                +:dev
-                +:dev-*
-                +:renovate/*
-            """.trimIndent()
+            branchFilter = "+:*"
         }
     }
 }
@@ -80,18 +80,19 @@ fun BuildFeatures.configureBaseFeatures() {
         publisher = github {
             githubUrl = "https://api.github.com"
             authType = personalToken {
-                token = "credentialsJSON:446a66f5-8a12-41b4-a31f-6eb9ee6087ba"
+                token = "credentialsJSON:f57a4fdd-fb30-41c0-9983-620364336d03"
             }
         }
     }
 }
 
+// TODO: Doesn't trigger builds
 fun BuildFeatures.configurePullRequests() {
     pullRequests {
         vcsRootExtId = "${DslContext.settingsRoot.id}"
         provider = github {
             authType = token {
-                token = "credentialsJSON:a30ebfc3-045a-4821-9f62-f061490d2987"
+                token = "credentialsJSON:f57a4fdd-fb30-41c0-9983-620364336d03"
             }
             filterAuthorRole = PullRequests.GitHubRoleFilter.MEMBER_OR_COLLABORATOR
         }
@@ -106,7 +107,7 @@ class Test : BuildType() {
         configureTriggers()
         features {
             configureBaseFeatures()
-            configurePullRequests()
+//            configurePullRequests()
         }
 
         steps {
@@ -126,7 +127,7 @@ class Style : BuildType() {
         configureTriggers()
         features {
             configureBaseFeatures()
-            configurePullRequests()
+//            configurePullRequests()
         }
 
         steps {
@@ -138,13 +139,26 @@ class Style : BuildType() {
     }
 }
 
-class Publish : BuildType() {
+class Publish(test: BuildType, style: BuildType) : BuildType() {
     init {
         name = "publish"
+
+        dependencies {
+            snapshot(test) {
+                onDependencyFailure = FailureAction.FAIL_TO_START
+            }
+            snapshot(style) {
+                onDependencyFailure = FailureAction.FAIL_TO_START
+            }
+        }
 
         configureVcs()
         features {
             configureBaseFeatures()
+        }
+
+        requirements {
+            contains("env.AGENT_NAME", "publishing")
         }
 
         steps {
