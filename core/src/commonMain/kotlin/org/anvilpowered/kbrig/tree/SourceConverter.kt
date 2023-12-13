@@ -11,6 +11,7 @@ package org.anvilpowered.kbrig.tree
 
 import org.anvilpowered.kbrig.Command
 import org.anvilpowered.kbrig.context.CommandContext
+import org.anvilpowered.kbrig.suggestion.SuggestionProvider
 import kotlin.jvm.JvmName
 
 /**
@@ -25,6 +26,7 @@ fun <S, R, T> ArgumentCommandNode<S, T>.mapSource(mapper: (R) -> S): ArgumentCom
         redirect?.mapSource(mapper),
         forks,
         children.mapValues { (_, child) -> child.mapSource(mapper) },
+        customSuggestions?.mapSource(mapper),
     )
 
 /**
@@ -71,6 +73,9 @@ private fun <S, R> Command<S>.mapSource(mapper: (R) -> S): Command<R> =
  * Converts a predicate with source type [S] to a predicate with source type [R].
  */
 private fun <S, R> ((S) -> Boolean).mapSource(mapper: (R) -> S): (R) -> Boolean = { this(mapper(it)) }
+
+private fun <S, R> SuggestionProvider<S>.mapSource(mapper: (R) -> S): SuggestionProvider<R> =
+    SuggestionProvider { context, builder -> getSuggestions(context.mapToOriginalSource(mapper), builder) }
 
 /**
  * Converts the given [CommandContext] with source type [R] to an [CommandContext] with source type [S].

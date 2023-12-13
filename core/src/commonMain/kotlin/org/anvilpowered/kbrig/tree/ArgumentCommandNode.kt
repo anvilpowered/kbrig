@@ -23,7 +23,7 @@ class ArgumentCommandNode<S, T>(
     redirect: CommandNode<S>? = null,
     forks: Boolean = false,
     children: Map<String, CommandNode<S>>,
-    private val customSuggestions: SuggestionProvider<S>? = null,
+    val customSuggestions: SuggestionProvider<S>? = null,
 ) : CommandNode<S>(name, command, requirement, redirect, forks, children) {
 
     override val usageText: String
