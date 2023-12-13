@@ -23,6 +23,7 @@ import org.anvilpowered.kbrig.context.CommandContext
 import org.anvilpowered.kbrig.context.StringRange
 import org.anvilpowered.kbrig.coroutine.coroutineToFuture
 import org.anvilpowered.kbrig.suggestion.Suggestion
+import org.anvilpowered.kbrig.suggestion.SuggestionProvider
 import org.anvilpowered.kbrig.suggestion.Suggestions
 import org.anvilpowered.kbrig.suggestion.SuggestionsBuilder
 import org.anvilpowered.kbrig.tree.ArgumentCommandNode
@@ -42,6 +43,7 @@ import com.mojang.brigadier.arguments.StringArgumentType as BrigadierStringArgum
 import com.mojang.brigadier.context.CommandContext as BrigadierCommandContext
 import com.mojang.brigadier.context.StringRange as BrigadierStringRange
 import com.mojang.brigadier.suggestion.Suggestion as BrigadierSuggestion
+import com.mojang.brigadier.suggestion.SuggestionProvider as BrigadierSuggestionProvider
 import com.mojang.brigadier.suggestion.Suggestions as BrigadierSuggestions
 import com.mojang.brigadier.suggestion.SuggestionsBuilder as BrigadierSuggestionsBuilder
 import com.mojang.brigadier.tree.ArgumentCommandNode as BrigadierArgumentCommandNode
@@ -71,7 +73,7 @@ fun <S, T> ArgumentCommandNode<S, T>.toBrigadier(): BrigadierArgumentCommandNode
         redirect?.toBrigadier(),
         null,
         forks,
-        null,
+        customSuggestions?.toBrigadier(),
     ).withChildrenFrom(this)
 }
 
@@ -137,6 +139,15 @@ private fun <T> ArgumentType<T>.toDefaultBrigadierArgument(): BrigadierArgumentT
             StringArgumentType.QuotablePhrase -> BrigadierStringArgumentType.string() as BrigadierArgumentType<T>
         }
         else -> null
+    }
+}
+
+private fun <S> SuggestionProvider<S>.toBrigadier(): BrigadierSuggestionProvider<S> {
+    val original = this
+    return BrigadierSuggestionProvider { context, builder ->
+        coroutineToFuture {
+            original.getSuggestions(context.toKBrig(), builder.toKBrig()).toBrigadier()
+        }
     }
 }
 
