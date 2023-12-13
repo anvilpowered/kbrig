@@ -6,6 +6,6 @@ brigadier = "com.mojang:brigadier:1.0.18"
 kotlinx-coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.2"
 
 [plugins]
-dokka = "org.jetbrains.dokka:1.8.20"
+dokka = "org.jetbrains.dokka:1.9.10"
 kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 ktlint = "org.jlleitschuh.gradle.ktlint:11.6.1"
