@@ -11,9 +11,6 @@ allprojects {
     apply(plugin = "org.jlleitschuh.gradle.ktlint")
     group = "org.anvilpowered"
     version = projectVersion
-    project.findProperty("buildNumber")
-        ?.takeIf { version.toString().contains("SNAPSHOT") }
-        ?.also { version = version.toString().replace("SNAPSHOT", "RC$it") }
     kotlin {
         targets.all {
             compilations.all {
