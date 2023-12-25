@@ -16,7 +16,14 @@ data class CommandContext<out S>(
     val argumentFetcher: ArgumentFetcher<*>,
     val child: CommandContext<S>?,
     val forks: Boolean,
-)
+) {
+    interface Scope<out S> {
+        /**
+         * The [CommandContext] of the command being executed.
+         */
+        val context: CommandContext<S>
+    }
+}
 
 typealias ArgumentFetcher<T> = (String, KClass<T>) -> T?
 

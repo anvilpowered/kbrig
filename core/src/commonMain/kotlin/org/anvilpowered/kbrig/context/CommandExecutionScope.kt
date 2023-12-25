@@ -23,9 +23,7 @@ import kotlin.coroutines.resume
 @DslMarker
 annotation class CommandExecutionScopeDsl
 
-interface CommandExecutionScope<S> {
-    val context: CommandContext<S>
-
+interface CommandExecutionScope<S> : CommandContext.Scope<S> {
     @CommandExecutionScopeDsl
     suspend fun yield(value: Int): Nothing
 }
@@ -36,11 +34,19 @@ suspend fun <S> CommandExecutionScope<S>.yieldError(): Nothing = yield(value = 0
 @CommandExecutionScopeDsl
 suspend fun <S> CommandExecutionScope<S>.yieldSuccess(): Nothing = yield(value = Command.SINGLE_SUCCESS)
 
+fun <S, B : ArgumentBuilder<S, B>> B.executesScoped(block: suspend CommandExecutionScope<S>.() -> Unit) =
+    executesSuspending { context ->
+        val scope = CommandExecutionScopeImpl(context)
+        val continuation = UnitCommandExecutionContinuation(scope.future)
+        scope.step = block.createCoroutineUnintercepted(scope, continuation)
+        scope.await()
+    }
+
 private class CommandExecutionScopeImpl<S>(
     override val context: CommandContext<S>,
 ) : CommandExecutionScope<S> {
     lateinit var step: Continuation<Unit>
-    var future = CompletableDeferred<Int>()
+    val future = CompletableDeferred<Int>()
 
     suspend fun await(): Int {
         step.resume(Unit)
@@ -68,11 +74,3 @@ private class UnitCommandExecutionContinuation(val future: CompletableDeferred<I
         }
     }
 }
-
-fun <S, B : ArgumentBuilder<S, B>> B.executesScoped(block: suspend CommandExecutionScope<S>.() -> Unit) =
-    executesSuspending { context ->
-        val scope = CommandExecutionScopeImpl(context)
-        val continuation = UnitCommandExecutionContinuation(scope.future)
-        scope.step = block.createCoroutineUnintercepted(scope, continuation)
-        scope.await()
-    }
