@@ -10,11 +10,9 @@ package org.anvilpowered.kbrig.suggestion
 
 import org.anvilpowered.kbrig.builder.RequiredArgumentBuilder
 import org.anvilpowered.kbrig.context.CommandContext
+import org.anvilpowered.kbrig.context.CommandContextScopeDsl
 import kotlin.experimental.ExperimentalTypeInference
 import kotlin.jvm.JvmName
-
-@DslMarker
-annotation class CommandSuggestionScopeDsl
 
 @OptIn(ExperimentalTypeInference::class)
 @Suppress("INAPPLICABLE_JVM_NAME")
@@ -23,62 +21,62 @@ class CommandSuggestionScope<S> internal constructor(
     internal val builder: SuggestionsBuilder,
 ) : CommandContext.Scope<S> {
 
-    @CommandSuggestionScopeDsl
+    @CommandContextScopeDsl
     fun String.suggest(tooltip: String? = null) {
         builder.suggest(text = this, tooltip)
     }
 
-    @CommandSuggestionScopeDsl
+    @CommandContextScopeDsl
     fun Int.suggest(tooltip: String? = null) {
         builder.suggest(value = this, tooltip)
     }
 
     @JvmName("suggestAllStrings")
-    @CommandSuggestionScopeDsl
+    @CommandContextScopeDsl
     fun Iterable<String>.suggestAll(tooltip: String? = null) {
         forEach { builder.suggest(it, tooltip) }
     }
 
     @JvmName("suggestAllIntegers")
-    @CommandSuggestionScopeDsl
+    @CommandContextScopeDsl
     fun Iterable<Int>.suggestAll(tooltip: String? = null) {
         forEach { builder.suggest(it, tooltip) }
     }
 
     @JvmName("suggestAllStrings")
-    @CommandSuggestionScopeDsl
+    @CommandContextScopeDsl
     @OverloadResolutionByLambdaReturnType
     fun <T> Iterable<T>.suggestAll(tooltip: String? = null, mapper: (T) -> String) {
         forEach { builder.suggest(mapper(it), tooltip) }
     }
 
     @JvmName("suggestAllIntegers")
-    @CommandSuggestionScopeDsl
+    @CommandContextScopeDsl
     @OverloadResolutionByLambdaReturnType
     fun <T> Iterable<T>.suggestAll(tooltip: String? = null, mapper: (T) -> Int) {
         forEach { builder.suggest(mapper(it), tooltip) }
     }
 
-    @CommandSuggestionScopeDsl
+    @CommandContextScopeDsl
     @JvmName("suggestAllStrings")
     fun Sequence<String>.suggestAll(tooltip: String? = null) {
         forEach { builder.suggest(it, tooltip) }
     }
 
-    @CommandSuggestionScopeDsl
+    @CommandContextScopeDsl
     @JvmName("suggestAllIntegers")
     fun Sequence<Int>.suggestAll(tooltip: String? = null) {
         forEach { builder.suggest(it, tooltip) }
     }
 
-    @CommandSuggestionScopeDsl
+    @CommandContextScopeDsl
     @JvmName("suggestAllStrings")
     @OverloadResolutionByLambdaReturnType
     fun <T> Sequence<T>.suggestAll(tooltip: String? = null, mapper: (T) -> String) {
         forEach { builder.suggest(mapper(it), tooltip) }
     }
 
-    @CommandSuggestionScopeDsl
+    @CommandContextScopeDsl
     @JvmName("suggestAllIntegers")
     @OverloadResolutionByLambdaReturnType
     fun <T> Sequence<T>.suggestAll(tooltip: String? = null, mapper: (T) -> Int) {

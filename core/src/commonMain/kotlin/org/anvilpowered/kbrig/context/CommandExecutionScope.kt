@@ -20,18 +20,15 @@ import kotlin.coroutines.intrinsics.createCoroutineUnintercepted
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 import kotlin.coroutines.resume
 
-@DslMarker
-annotation class CommandExecutionScopeDsl
-
 interface CommandExecutionScope<S> : CommandContext.Scope<S> {
-    @CommandExecutionScopeDsl
+    @CommandContextScopeDsl
     suspend fun yield(value: Int): Nothing
 }
 
-@CommandExecutionScopeDsl
+@CommandContextScopeDsl
 suspend fun <S> CommandExecutionScope<S>.yieldError(): Nothing = yield(value = 0)
 
-@CommandExecutionScopeDsl
+@CommandContextScopeDsl
 suspend fun <S> CommandExecutionScope<S>.yieldSuccess(): Nothing = yield(value = Command.SINGLE_SUCCESS)
 
 fun <S, B : ArgumentBuilder<S, B>> B.executesScoped(block: suspend CommandExecutionScope<S>.() -> Unit) =
