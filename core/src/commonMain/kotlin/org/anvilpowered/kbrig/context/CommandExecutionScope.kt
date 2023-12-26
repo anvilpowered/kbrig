@@ -20,17 +20,6 @@ import kotlin.coroutines.intrinsics.createCoroutineUnintercepted
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 import kotlin.coroutines.resume
 
-interface CommandExecutionScope<S> : CommandContext.Scope<S> {
-    @CommandContextScopeDsl
-    suspend fun yield(value: Int): Nothing
-}
-
-@CommandContextScopeDsl
-suspend fun <S> CommandExecutionScope<S>.yieldError(): Nothing = yield(value = 0)
-
-@CommandContextScopeDsl
-suspend fun <S> CommandExecutionScope<S>.yieldSuccess(): Nothing = yield(value = Command.SINGLE_SUCCESS)
-
 fun <S, B : ArgumentBuilder<S, B>> B.executesScoped(block: suspend CommandExecutionScope<S>.() -> Unit) =
     executesSuspending { context ->
         val scope = CommandExecutionScopeImpl(context)
@@ -38,6 +27,20 @@ fun <S, B : ArgumentBuilder<S, B>> B.executesScoped(block: suspend CommandExecut
         scope.step = block.createCoroutineUnintercepted(scope, continuation)
         scope.await()
     }
+
+interface CommandExecutionScope<S> : CommandContext.Scope<S> {
+    @CommandContextScopeDsl
+    suspend fun yield(value: Int): Nothing
+
+    @CommandContextScopeDsl
+    override suspend fun abort(): Nothing = yieldError()
+}
+
+@CommandContextScopeDsl
+suspend fun <S> CommandExecutionScope<S>.yieldError(): Nothing = yield(value = 0)
+
+@CommandContextScopeDsl
+suspend fun <S> CommandExecutionScope<S>.yieldSuccess(): Nothing = yield(value = Command.SINGLE_SUCCESS)
 
 private class CommandExecutionScopeImpl<S>(
     override val context: CommandContext<S>,

@@ -22,6 +22,9 @@ data class CommandContext<out S>(
          * The [CommandContext] of the command being executed.
          */
         val context: CommandContext<S>
+
+        @CommandContextScopeDsl
+        suspend fun abort(): Nothing
     }
 }
 
