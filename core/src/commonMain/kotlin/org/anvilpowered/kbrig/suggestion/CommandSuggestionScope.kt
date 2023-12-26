@@ -34,6 +34,9 @@ fun <S, T, B : RequiredArgumentBuilder<S, T>> B.suggestsScoped(command: suspend 
     }
 
 interface CommandSuggestionScope<S> : CommandContext.Scope<S> {
+
+    val remainingLowerCase: String
+
     override val context: CommandContext<S>
 
     @CommandContextScopeDsl
@@ -42,12 +45,16 @@ interface CommandSuggestionScope<S> : CommandContext.Scope<S> {
     @CommandContextScopeDsl
     fun Int.suggest(tooltip: String? = null)
 
-    @JvmName("suggestAllStrings")
     @CommandContextScopeDsl
+    @JvmName("suggestAllStrings")
     fun Iterable<String>.suggestAll(tooltip: String? = null)
 
-    @JvmName("suggestAllIntegers")
     @CommandContextScopeDsl
+    @JvmName("suggestAllStringsFiltered")
+    fun Iterable<String>.suggestAllFiltered(tooltip: String? = null, ignoreCase: Boolean = true)
+
+    @CommandContextScopeDsl
+    @JvmName("suggestAllIntegers")
     fun Iterable<Int>.suggestAll(tooltip: String? = null)
 
     @CommandContextScopeDsl
@@ -55,31 +62,45 @@ interface CommandSuggestionScope<S> : CommandContext.Scope<S> {
     fun Sequence<String>.suggestAll(tooltip: String? = null)
 
     @CommandContextScopeDsl
+    @JvmName("suggestAllStringsFiltered")
+    fun Sequence<String>.suggestAllFiltered(tooltip: String? = null, ignoreCase: Boolean = true)
+
+    @CommandContextScopeDsl
     @JvmName("suggestAllIntegers")
     fun Sequence<Int>.suggestAll(tooltip: String? = null)
 
-    @JvmName("suggestAllStrings")
     @CommandContextScopeDsl
     @OverloadResolutionByLambdaReturnType
+    @JvmName("suggestAllStrings")
     fun <T> Iterable<T>.suggestAll(tooltip: String? = null, mapper: (T) -> String)
 
-    @JvmName("suggestAllIntegers")
     @CommandContextScopeDsl
     @OverloadResolutionByLambdaReturnType
+    @JvmName("suggestAllStringsFiltered")
+    fun <T> Iterable<T>.suggestAllFiltered(tooltip: String? = null, ignoreCase: Boolean = true, mapper: (T) -> String)
+
+    @CommandContextScopeDsl
+    @OverloadResolutionByLambdaReturnType
+    @JvmName("suggestAllIntegers")
     fun <T> Iterable<T>.suggestAll(tooltip: String? = null, mapper: (T) -> Int)
 
     @CommandContextScopeDsl
-    @JvmName("suggestAllStrings")
     @OverloadResolutionByLambdaReturnType
+    @JvmName("suggestAllStrings")
     fun <T> Sequence<T>.suggestAll(tooltip: String? = null, mapper: (T) -> String)
 
     @CommandContextScopeDsl
-    @JvmName("suggestAllIntegers")
     @OverloadResolutionByLambdaReturnType
+    @JvmName("suggestAllStringsFiltered")
+    fun <T> Sequence<T>.suggestAllFiltered(tooltip: String? = null, ignoreCase: Boolean = true, mapper: (T) -> String)
+
+    @CommandContextScopeDsl
+    @OverloadResolutionByLambdaReturnType
+    @JvmName("suggestAllIntegers")
     fun <T> Sequence<T>.suggestAll(tooltip: String? = null, mapper: (T) -> Int)
 }
 
-private class CommandSuggestionScopeImpl<S> internal constructor(
+private class CommandSuggestionScopeImpl<S>(
     override val context: CommandContext<S>,
     val builder: SuggestionsBuilder,
 ) : CommandSuggestionScope<S> {
@@ -94,6 +115,9 @@ private class CommandSuggestionScopeImpl<S> internal constructor(
             Suggestions.empty()
         }
     }
+
+    override val remainingLowerCase: String
+        get() = builder.remainingLowerCase
 
     override suspend fun abort(): Nothing {
         future.complete(false)
@@ -114,26 +138,60 @@ private class CommandSuggestionScopeImpl<S> internal constructor(
     @JvmName("suggestAllStrings")
     override fun Iterable<String>.suggestAll(tooltip: String?) = forEach { builder.suggest(it, tooltip) }
 
+    @JvmName("suggestAllStringsFiltered")
+    override fun Iterable<String>.suggestAllFiltered(tooltip: String?, ignoreCase: Boolean) =
+        forEach {
+            if (it.startsWith(remainingLowerCase, ignoreCase)) {
+                builder.suggest(it, tooltip)
+            }
+        }
+
     @JvmName("suggestAllIntegers")
-    override fun Iterable<Int>.suggestAll(tooltip: String?) = forEach { builder.suggest(it, tooltip) }
+    override fun Iterable<Int>.suggestAll(tooltip: String?) =
+        forEach { builder.suggest(it, tooltip) }
 
     @JvmName("suggestAllStrings")
-    override fun Sequence<String>.suggestAll(tooltip: String?) = forEach { builder.suggest(it, tooltip) }
+    override fun Sequence<String>.suggestAll(tooltip: String?) =
+        forEach { builder.suggest(it, tooltip) }
+
+    @JvmName("suggestAllStringsFiltered")
+    override fun Sequence<String>.suggestAllFiltered(tooltip: String?, ignoreCase: Boolean) =
+        filter { it.startsWith(remainingLowerCase, ignoreCase) }.suggestAll(tooltip)
 
     @JvmName("suggestAllIntegers")
-    override fun Sequence<Int>.suggestAll(tooltip: String?) = forEach { builder.suggest(it, tooltip) }
+    override fun Sequence<Int>.suggestAll(tooltip: String?) =
+        forEach { builder.suggest(it, tooltip) }
 
     @JvmName("suggestAllStrings")
-    override fun <T> Iterable<T>.suggestAll(tooltip: String?, mapper: (T) -> String) = forEach { builder.suggest(mapper(it), tooltip) }
+    override fun <T> Iterable<T>.suggestAll(tooltip: String?, mapper: (T) -> String) =
+        forEach { builder.suggest(mapper(it), tooltip) }
+
+    @JvmName("suggestAllStringsFiltered")
+    override fun <T> Iterable<T>.suggestAllFiltered(tooltip: String?, ignoreCase: Boolean, mapper: (T) -> String) =
+        forEach {
+            val mapped = mapper(it)
+            if (mapped.startsWith(remainingLowerCase, ignoreCase)) {
+                builder.suggest(mapped, tooltip)
+            }
+        }
 
     @JvmName("suggestAllIntegers")
-    override fun <T> Iterable<T>.suggestAll(tooltip: String?, mapper: (T) -> Int) = forEach { builder.suggest(mapper(it), tooltip) }
+    override fun <T> Iterable<T>.suggestAll(tooltip: String?, mapper: (T) -> Int) =
+        forEach { builder.suggest(mapper(it), tooltip) }
 
     @JvmName("suggestAllStrings")
-    override fun <T> Sequence<T>.suggestAll(tooltip: String?, mapper: (T) -> String) = forEach { builder.suggest(mapper(it), tooltip) }
+    override fun <T> Sequence<T>.suggestAll(tooltip: String?, mapper: (T) -> String) =
+        forEach { builder.suggest(mapper(it), tooltip) }
+
+    @JvmName("suggestAllStringsFiltered")
+    override fun <T> Sequence<T>.suggestAllFiltered(tooltip: String?, ignoreCase: Boolean, mapper: (T) -> String) =
+        map(mapper)
+            .filter { it.startsWith(remainingLowerCase, ignoreCase) }
+            .forEach { builder.suggest(it, tooltip) }
 
     @JvmName("suggestAllIntegers")
-    override fun <T> Sequence<T>.suggestAll(tooltip: String?, mapper: (T) -> Int) = forEach { builder.suggest(mapper(it), tooltip) }
+    override fun <T> Sequence<T>.suggestAll(tooltip: String?, mapper: (T) -> Int) =
+        forEach { builder.suggest(mapper(it), tooltip) }
 }
 
 private class UnitCommandExecutionContinuation(val scope: CommandSuggestionScopeImpl<*>) : Continuation<Unit> {
