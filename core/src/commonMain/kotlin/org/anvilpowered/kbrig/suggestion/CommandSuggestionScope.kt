@@ -25,19 +25,40 @@ import kotlin.coroutines.resume
 import kotlin.experimental.ExperimentalTypeInference
 import kotlin.jvm.JvmName
 
-fun <S, T, B : RequiredArgumentBuilder<S, T>> B.suggestsScoped(command: suspend CommandSuggestionScope<S>.() -> Unit) =
+/**
+ * Adds a suggestion provider to this argument builder using the [CommandContextScopeDsl].
+ *
+ * The control-flow method [CommandSuggestionScope.abort] will exit the provided [block] early and
+ * lead to [Suggestions.empty] being returned.
+ * Exceptions will be propagated to the caller of [SuggestionProvider.getSuggestions].
+ *
+ * ## Example Usage
+ *
+ * ```kt
+ * fun <S> RequiredArgumentBuilder<S, String>.suggestPlayerArgument(
+ *     proxyServer: ProxyServer,
+ * ): RequiredArgumentBuilder<S, String> =
+ *     suggestsScoped { proxyServer.allPlayers.suggestAllFiltered { it.username } }
+ * ```
+ *
+ */
+fun <S, T, B : RequiredArgumentBuilder<S, T>> B.suggestsScoped(block: suspend CommandSuggestionScope<S>.() -> Unit) =
     suggests { context, builder ->
         val scope = CommandSuggestionScopeImpl(context, builder)
         val continuation = UnitCommandExecutionContinuation(scope)
-        scope.step = command.createCoroutineUnintercepted(scope, continuation)
+        scope.step = block.createCoroutineUnintercepted(scope, continuation)
         scope.await()
     }
 
 interface CommandSuggestionScope<S> : CommandContext.Scope<S> {
 
+    /**
+     * The start of the remaining argument string in lowercase.
+     * Use this in combination with `startsWith` to filter out suggestions that don't match the remaining argument.
+     *
+     * Prefer to use [suggestAllFiltered] instead of this property.
+     */
     val remainingLowerCase: String
-
-    override val context: CommandContext<S>
 
     @CommandContextScopeDsl
     fun String.suggest(tooltip: String? = null)
