@@ -13,6 +13,8 @@ import org.anvilpowered.kbrig.SuspendingCommand
 import org.anvilpowered.kbrig.context.CommandContext
 import org.anvilpowered.kbrig.toBlocking
 
+fun <S, B : ArgumentBuilder<S, B>> B.executesSuspending(command: SuspendingCommand<S>?) = executes(command?.toBlocking())
+
 fun <S, B : ArgumentBuilder<S, B>> B.executesSingleSuccess(block: (context: CommandContext<S>) -> Unit) =
     executes { context ->
         try {
@@ -24,4 +26,12 @@ fun <S, B : ArgumentBuilder<S, B>> B.executesSingleSuccess(block: (context: Comm
         }
     }
 
-fun <S, B : ArgumentBuilder<S, B>> B.executesSuspending(command: SuspendingCommand<S>?) = executes(command?.toBlocking())
+fun <S, B : ArgumentBuilder<S, B>> B.executesFailure(block: (context: CommandContext<S>) -> Unit) =
+    executes { context ->
+        try {
+            block(context)
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        0
+    }
