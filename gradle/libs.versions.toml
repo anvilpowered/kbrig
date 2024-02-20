@@ -3,7 +3,7 @@ kotlin = "1.9.22"
 
 [libraries]
 brigadier = "com.mojang:brigadier:1.0.18"
-kotlinx-coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3"
+kotlinx-coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0"
 
 [plugins]
 dokka = "org.jetbrains.dokka:1.9.10"
