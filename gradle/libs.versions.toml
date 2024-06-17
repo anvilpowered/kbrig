@@ -2,7 +2,7 @@
 kotlin = "2.0.0"
 
 [libraries]
-brigadier = "com.mojang:brigadier:1.0.18"
+brigadier = "com.mojang:brigadier:1.0.500"
 kotlinx-coroutines = "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0"
 
 [plugins]
